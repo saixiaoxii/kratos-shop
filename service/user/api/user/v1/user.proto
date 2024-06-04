@@ -14,8 +14,20 @@ service User {
 	rpc ListUser (ListUserRequest) returns (ListUserReply);
 }
 
-message CreateUserRequest {}
-message CreateUserReply {}
+message CreateUserRequest {
+	string nickName = 1;
+	string password = 2;
+	string mobile = 3;
+}
+message CreateUserReply {
+	int64 id = 1;
+	string password = 2;
+	string mobile = 3;
+	string nickName = 4;
+	int64 birthday = 5;
+	string gender = 6;
+	int32 role = 7;
+}
 
 message UpdateUserRequest {}
 message UpdateUserReply {}
