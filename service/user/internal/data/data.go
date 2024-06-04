@@ -4,9 +4,6 @@ import (
 	slog "log"
 	"os"
 	"time"
-	slog "log"
-	"os"
-	"time"
 	"user/internal/conf"
 
 	"github.com/go-redis/redis/extra/redisotel"
@@ -17,27 +14,19 @@ import (
 	"gorm.io/gorm/schema"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-redis/redis/extra/redisotel"
-	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
-	"gorm.io/gorm/schema"
 )
 
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(NewData, NewGreeterRepo, NewDB, NewRedis, NewUserRepo)
 
+// Data .
 type Data struct {
-	db  *gorm.DB
-	rdb *redis.Client
 	db  *gorm.DB
 	rdb *redis.Client
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
 func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
