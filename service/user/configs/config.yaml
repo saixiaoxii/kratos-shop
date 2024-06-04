@@ -4,6 +4,7 @@ server:
     timeout: 1s
   grpc:
     addr: 0.0.0.0:50051
+    addr: 0.0.0.0:50051
     timeout: 1s
 data:
   database:
