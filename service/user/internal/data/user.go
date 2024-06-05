@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// 定义数据表结构体
+// User define the user struct
 type User struct {
 	ID          int64      `gorm:"primarykey"`
 	Mobile      string     `gorm:"index:idx_mobile;unique;type:varchar(11) comment '手机号码，用户唯一标识';not null"`
@@ -33,7 +33,7 @@ type userRepo struct {
 	log  *log.Helper
 }
 
-// NewUserRepo . 这里需要注意，上面 data 文件 wire 注入的是此方法，方法名不要写错了
+// NewUserRepo wired userRepo
 func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 	return &userRepo{
 		data: data,
@@ -44,7 +44,7 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 // CreateUser .
 func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, error) {
 	var user User
-	// 验证是否已经创建
+	// if the user already exists, return an error
 	result := r.data.db.Where(&biz.User{Mobile: u.Mobile}).First(&user)
 	if result.RowsAffected == 1 {
 		return nil, status.Errorf(codes.AlreadyExists, "用户已存在")
@@ -52,7 +52,7 @@ func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 
 	user.Mobile = u.Mobile
 	user.NickName = u.NickName
-	user.Password = encrypt(u.Password) // 密码加密
+	user.Password = encrypt(u.Password) // encrypt password
 	res := r.data.db.Create(&user)
 	if res.Error != nil {
 		return nil, status.Errorf(codes.Internal, res.Error.Error())
