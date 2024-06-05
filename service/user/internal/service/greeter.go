@@ -6,7 +6,11 @@ import (
 	v1 "user/api/helloworld/v1"
 	"user/internal/biz"
 )
+import	"github.com/go-kratos/swagger-api/openapiv2"
 
+h := openapiv2.NewHandler()
+//将/q/路由放在最前匹配
+httpSrv.HandlePrefix("/q/", h)
 // GreeterService is a greeter service.
 type GreeterService struct {
 	v1.UnimplementedGreeterServer
