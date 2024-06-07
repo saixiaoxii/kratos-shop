@@ -18,7 +18,7 @@ kratos proto server api/user/v1/user.proto -t internal/service
 go generate ./...
 ```
 
-- 接口定义，在 `user.proto` 定义
+## 接口定义，在 `user.proto` 定义
 
 ```protobuf
 syntax = "proto3";
@@ -65,7 +65,7 @@ message ListUserRequest {}
 message ListUserReply {}
 ```
 
-- 生成信息
+## 生成信息
 
 ```bash
 make api
@@ -74,7 +74,7 @@ make api
 kratos proto client api/user/v1/user.proto
 ```
 
-- 修改 `ser/configs/config.yaml`, 注意调整配置内容为自己的配置
+## 修改 `ser/configs/config.yaml`, 注意调整配置内容为自己的配置
 
 ```yaml
 server:
@@ -98,7 +98,7 @@ trace:
   endpoint: http://192.168.29.130:14268/api/traces
 ```
 
-- 新建 `user/configs/registry.yaml`, 引入consul服务
+## 新建 `user/configs/registry.yaml`, 引入consul服务
 
 ```bash
 # 这里引入了 consul 的服务注册与发现，先把配置加入进去
@@ -107,7 +107,7 @@ consul:
   scheme: http
 ```
 
-- 修改 `user/internal/conf/conf.proto` 配置文件
+## 修改 `user/internal/conf/conf.proto` 配置文件
 
 ```go
 syntax = "proto3";
@@ -168,23 +168,23 @@ message Trace {
 }
 ```
 
-- 生成对应 go 代码
+## 生成对应 go 代码
 
 ```bash
 make config
 ```
 
-- docker 启动 consul 服务
+## docker 启动 consul 服务
 
 ```bash
 docker run -d -p 8500:8500 -p 8300:8300 -p 8301:8301 -p 8302:8302 -p 8600:8600/udp consul consul agent -dev -client=0.0.0.0 --restart=always
 ```
 
-### 服务代码
+## 服务代码
 
 ---
 
-- mysql、redis 和新增用户的服务注册以及初始化，新增用户的功能代码在 
+### mysql、redis 和新增用户的服务注册以及初始化，新增用户的功能代码在 
 `data/user.go`
 
 ```go
@@ -275,7 +275,7 @@ func NewRedis(c *conf.Data) *redis.Client {
 }
 ```
 
-- `biz/user.go` 定义 User 接口
+### `biz/user.go` 定义 User 接口
 
 ```go
 package biz
@@ -315,7 +315,7 @@ func (uc *UserUsecase) Create(ctx context.Context, u *User) (*User, error) {
 }
 ```
 
-在 `biz.go` 中注册服务
+### 在 `biz.go` 中注册服务
 
 ```go
 package biz
@@ -326,7 +326,7 @@ import "github.com/google/wire"
 var ProviderSet = wire.NewSet(NewGreeterUsecase, NewUserUsecase)
 ```
 
-- 新增用户功能实现 `data/user.go`
+### 新增用户功能实现 `data/user.go`
 
 ```go
 package data
@@ -406,7 +406,7 @@ func encrypt(psd string) string {
 }
 ```
 
-- `service/user.go` 实现grpc接口请求
+### `service/user.go` 实现grpc接口请求
 
 ```go
 package service
@@ -456,7 +456,7 @@ func (u *UserService) CreateUser(ctx context.Context, req *v1.CreateUserRequest)
 }
 ```
 
-在 `service.go` 中注册服务
+### 在 `service.go` 中注册服务
 
 ```go
 package service
@@ -467,7 +467,7 @@ import "github.com/google/wire"
 var ProviderSet = wire.NewSet(NewGreeterService, NewUserService)
 ```
 
-- `server/grpc.go` 中注册 grpc 服务
+### `server/grpc.go` 中注册 grpc 服务
 
 ```go 
 package server
