@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package api.user.v1;
+
+option go_package = "user/api/user/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.user.v1";
+
+service User {
+	rpc CreateUser (CreateUserRequest) returns (CreateUserReply);
+	rpc GetUserList(PageInfo) returns (UserListResponse){}; // 用户列表
+	rpc GetUserByMobile(MobileRequest) returns (UserInfoResponse){}; // 通过 mobile 查询用户
+	rpc GetUserById(IdRequest) returns (UserInfoResponse){}; // 通过 Id 查询用户
+	rpc UpdateUser(UpdateUserInfo) returns (google.protobuf.Empty){}; // 更新用户
+	rpc CheckPassword(PasswordCheckInfo) returns (CheckResponse){}; // 验证用户密码
+
+}
+
+message CreateUserRequest {
+	string nickName = 1;
+	string password = 2;
+	string mobile = 3;
+}
+message CreateUserReply {
+	int64 id = 1;
+	string password = 2;
+	string mobile = 3;
+	string nickName = 4;
+	int64 birthday = 5;
+	string gender = 6;
+	int32 role = 7;
+}
+
+message UserListResponse{
+	int32 total = 1;
+	repeated UserInfoResponse data = 2;
+}
+
+// 分页
+message PageInfo{
+	uint32 pn = 1;
+	uint32 pSize = 2;
+}
+
+message MobileRequest{
+	string mobile = 1;
+}
+
+message IdRequest{
+	int64 id = 1;
+}
+
+message  UpdateUserInfo{
+	int64 id = 1;
+	string nickName = 2;
+	string gender = 3;
+	uint64 birthday = 4;
+}
+
+message PasswordCheckInfo{
+	string password = 1;
+	string encryptedPassword = 2;
+}
+
+message CheckResponse{
+	bool success = 1;
+}
