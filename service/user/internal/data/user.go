@@ -3,9 +3,11 @@ package data
 import (
 	"context"
 	"crypto/sha512"
+	"errors"
 	"fmt"
 	"time"
 	"user/internal/biz"
+	"user/internal/data/ent/user"
 
 	"github.com/anaskhan96/go-password-encoder"
 	"github.com/go-kratos/kratos/v2/log"
@@ -43,27 +45,48 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 
 // CreateUser .
 func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, error) {
-	var user User
-	// if the user already exists, return an error
-	result := r.data.db.Where(&biz.User{Mobile: u.Mobile}).First(&user)
-	if result.RowsAffected == 1 {
+	// 检查 r.data 和 r.data.edb 不为 nil
+    if r.data == nil || r.data.edb == nil {
+        return nil, errors.New("data 或 edb 未初始化")
+    }
+
+    // 检查 u 不为 nil
+    if u == nil {
+        return nil, errors.New("传入的用户对象为 nil")
+    }
+	// 检查用户是否已存在
+	exists, err := r.data.edb.User.
+		Query().
+		Where(user.MobileEQ(u.Mobile)).
+		Exist(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "查询用户失败: %v", err)
+	}
+	if exists {
 		return nil, status.Errorf(codes.AlreadyExists, "用户已存在")
 	}
 
-	user.Mobile = u.Mobile
-	user.NickName = u.NickName
-	user.Password = encrypt(u.Password) // encrypt password
-	res := r.data.db.Create(&user)
-	if res.Error != nil {
-		return nil, status.Errorf(codes.Internal, res.Error.Error())
+	// 创建新用户
+	hashedPassword := encrypt(u.Password) // 假设存在加密函数
+
+	entUser, err := r.data.edb.User.
+		Create().
+		SetMobile(u.Mobile).
+		SetNickname(u.NickName).
+		SetPassword(hashedPassword).
+		Save(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "创建用户失败: %v", err)
 	}
+
+	// 构造并返回业务层用户对象
 	return &biz.User{
-		ID:       user.ID,
-		Mobile:   user.Mobile,
-		Password: user.Password,
-		NickName: user.NickName,
-		Gender:   user.Gender,
-		Role:     user.Role,
+		ID:       entUser.ID,
+		Mobile:   entUser.Mobile,
+		Password: entUser.Password,
+		NickName: entUser.Nickname,
+		Gender:   entUser.Gender,
+		Role:     entUser.Role,
 	}, nil
 }
 

@@ -22,24 +22,28 @@ func NewUserService(uc *biz.UserUsecase, logger log.Logger) *UserService {
 
 // CreateUser create a user
 func (u *UserService) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*v1.CreateUserReply, error) {
-	user, err := u.uc.Create(ctx, &biz.User{
-		Mobile:   req.Mobile,
-		Password: req.Password,
-		NickName: req.NickName,
-	})
-	if err != nil {
-		return nil, err
-	}
+    // 记录请求信息，注意避免记录敏感信息如密码
+    u.log.Info(" Creating user ", " mobile:", req.Mobile, " nickname:", req.NickName)
 
-	userInfoRsp := v1.CreateUserReply{
-		Id:       user.ID,
-		Mobile:   user.Mobile,
-		Password: user.Password,
-		NickName: user.NickName,
-		Gender:   user.Gender,
-		Role:     int32(user.Role),
-		Birthday: user.Birthday,
-	}
+    user, err := u.uc.Create(ctx, &biz.User{
+        Mobile:   req.Mobile,
+        Password: req.Password,
+        NickName: req.NickName,
+    })
+    if err != nil {
+        u.log.Error("Failed to create user", "error", err)
+        return nil, err
+    }
 
-	return &userInfoRsp, nil
+    userInfoRsp := v1.CreateUserReply{
+        Id:       user.ID,
+        Mobile:   user.Mobile,
+        Password: user.Password,
+        NickName: user.NickName,
+        Gender:   user.Gender,
+        Role:     int32(user.Role),
+        Birthday: user.Birthday,
+    }
+
+    return &userInfoRsp, nil
 }

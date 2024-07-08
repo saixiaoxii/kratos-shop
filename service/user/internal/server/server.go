@@ -1,8 +1,9 @@
 package server
 
 import (
-	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"user/internal/conf"
+
+	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
 
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/google/wire"
@@ -10,7 +11,7 @@ import (
 )
 
 // ProviderSet is server providers.
-var ProviderSet = wire.NewSet(NewGRPCServer, NewHTTPServer, NewRegistrar)
+var ProviderSet = wire.NewSet(NewGRPCServer, NewHTTPServer,NewRegistrar)
 
 // NewRegistrar 引入 consul
 func NewRegistrar(conf *conf.Registry) registry.Registrar {
@@ -25,3 +26,4 @@ func NewRegistrar(conf *conf.Registry) registry.Registrar {
 	r := consul.New(cli, consul.WithHealthCheck(false))
 	return r
 }
+

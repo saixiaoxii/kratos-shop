@@ -7,6 +7,7 @@ import (
 	"user/internal/data/ent/class"
 	"user/internal/data/ent/schema"
 	"user/internal/data/ent/student"
+	"user/internal/data/ent/user"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -25,4 +26,60 @@ func init() {
 	studentDescName := studentFields[0].Descriptor()
 	// student.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	student.NameValidator = studentDescName.Validators[0].(func(string) error)
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescMobile is the schema descriptor for mobile field.
+	userDescMobile := userFields[1].Descriptor()
+	// user.MobileValidator is a validator for the "mobile" field. It is called by the builders before save.
+	user.MobileValidator = func() func(string) error {
+		validators := userDescMobile.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(mobile string) error {
+			for _, fn := range fns {
+				if err := fn(mobile); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescPassword is the schema descriptor for password field.
+	userDescPassword := userFields[2].Descriptor()
+	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	user.PasswordValidator = func() func(string) error {
+		validators := userDescPassword.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(password string) error {
+			for _, fn := range fns {
+				if err := fn(password); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescNickname is the schema descriptor for nickname field.
+	userDescNickname := userFields[3].Descriptor()
+	// user.NicknameValidator is a validator for the "nickname" field. It is called by the builders before save.
+	user.NicknameValidator = userDescNickname.Validators[0].(func(string) error)
+	// userDescGender is the schema descriptor for gender field.
+	userDescGender := userFields[5].Descriptor()
+	// user.DefaultGender holds the default value on creation for the gender field.
+	user.DefaultGender = userDescGender.Default.(string)
+	// user.GenderValidator is a validator for the "gender" field. It is called by the builders before save.
+	user.GenderValidator = userDescGender.Validators[0].(func(string) error)
+	// userDescRole is the schema descriptor for role field.
+	userDescRole := userFields[6].Descriptor()
+	// user.DefaultRole holds the default value on creation for the role field.
+	user.DefaultRole = userDescRole.Default.(int)
+	// userDescIsDeleted is the schema descriptor for is_deleted field.
+	userDescIsDeleted := userFields[9].Descriptor()
+	// user.DefaultIsDeleted holds the default value on creation for the is_deleted field.
+	user.DefaultIsDeleted = userDescIsDeleted.Default.(bool)
 }

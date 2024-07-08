@@ -45,13 +45,29 @@ var (
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "ID", Type: field.TypeInt64, Increment: true},
+		{Name: "Mobile", Type: field.TypeString, Unique: true, Size: 11},
+		{Name: "Password", Type: field.TypeString, Size: 100},
+		{Name: "NickName", Type: field.TypeString, Size: 25},
+		{Name: "Birthday", Type: field.TypeTime, Nullable: true},
+		{Name: "Gender", Type: field.TypeString, Size: 16, Default: "male"},
+		{Name: "Role", Type: field.TypeInt, Default: 1},
+		{Name: "add_time", Type: field.TypeTime, Nullable: true},
+		{Name: "update_time", Type: field.TypeTime, Nullable: true},
+		{Name: "IsDeletedAt", Type: field.TypeBool, Default: false},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "user_Mobile",
+				Unique:  true,
+				Columns: []*schema.Column{UsersColumns[1]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

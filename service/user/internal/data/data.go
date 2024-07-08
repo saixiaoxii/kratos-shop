@@ -1,10 +1,12 @@
 package data
 
 import (
+	"context"
 	slog "log"
 	"os"
 	"time"
 	"user/internal/conf"
+	"user/internal/data/ent"
 
 	"github.com/go-redis/redis/extra/redisotel"
 	"github.com/go-redis/redis/v8"
@@ -18,20 +20,21 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewGreeterRepo, NewDB, NewRedis, NewUserRepo)
+var ProviderSet = wire.NewSet(NewData, NewGreeterRepo, NewDB, NeweDB, NewRedis, NewUserRepo)
 
 // Data .
 type Data struct {
 	db  *gorm.DB
+	edb *ent.Client
 	rdb *redis.Client
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
+func NewData(c *conf.Data, logger log.Logger, edb *ent.Client, rdb *redis.Client) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 	}
-	return &Data{db: db, rdb: rdb}, cleanup, nil
+	return &Data{edb: edb, rdb: rdb}, cleanup, nil
 }
 
 // NewDB .
@@ -82,4 +85,20 @@ func NewRedis(c *conf.Data) *redis.Client {
 		log.Error(err)
 	}
 	return rdb
+}
+
+func NeweDB(c *conf.Data) *ent.Client {
+    client, err := ent.Open(c.Database.Driver, c.Database.Source)
+    if err != nil {
+        log.Errorf("failed opening connection to %s: %v", c.Database.Driver, err)
+        panic("failed to connect database")
+    }
+
+    // 执行数据库模式创建或迁移
+    ctx := context.Background()
+    if err := client.Schema.Create(ctx); err != nil {
+        log.Fatalf("failed creating schema resources: %v", err)
+    }
+
+    return client
 }
