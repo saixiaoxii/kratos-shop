@@ -3,9 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	v1 "user/api/user/v1"
-
 	"google.golang.org/grpc"
+	v1 "user/api/user/v1"
 )
 
 var userClient v1.UserClient
@@ -34,9 +33,9 @@ func Init() {
 func TestCreateUser() {
 
 	rsp, err := userClient.CreateUser(context.Background(), &v1.CreateUserRequest{
-		Mobile:   fmt.Sprintf("1388888888%d", 1),
+		Mobile:   fmt.Sprintf("138324888%d", 1),
 		Password: "admin123",
-		NickName: fmt.Sprintf("YWWW%d", 1),
+		NickName: fmt.Sprintf("YWW3W%d", 1),
 	})
 	if err != nil {
 		panic("grpc 创建用户失败" + err.Error())
