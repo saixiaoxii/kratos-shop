@@ -32,7 +32,7 @@ func (User) Edges() []ent.Edge {
 	return nil
 }
 
-// Indexes of the User.
+// Indexes of the User. 
 func (User) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("mobile").Unique(),

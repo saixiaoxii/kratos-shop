@@ -2,29 +2,22 @@ package data
 
 import (
 	"context"
-	slog "log"
-	"os"
-	"time"
 	"user/internal/conf"
 	"user/internal/data/ent"
 
 	"github.com/go-redis/redis/extra/redisotel"
 	"github.com/go-redis/redis/v8"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
-	"gorm.io/gorm/schema"
+	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewGreeterRepo, NewDB, NeweDB, NewRedis, NewUserRepo)
+var ProviderSet = wire.NewSet(NewData, NewGreeterRepo,  NeweDB, NewRedis, NewUserRepo)
 
 // Data .
 type Data struct {
-	db  *gorm.DB
 	edb *ent.Client
 	rdb *redis.Client
 }
@@ -37,39 +30,6 @@ func NewData(c *conf.Data, logger log.Logger, edb *ent.Client, rdb *redis.Client
 	return &Data{edb: edb, rdb: rdb}, cleanup, nil
 }
 
-// NewDB .
-func NewDB(c *conf.Data) *gorm.DB {
-	// 终端打印输入 sql 执行记录
-	newLogger := logger.New(
-		slog.New(os.Stdout, "\r\n", slog.LstdFlags), // io writer
-		logger.Config{
-			SlowThreshold: time.Second, // 慢查询 SQL 阈值
-			Colorful:      true,        // 禁用彩色打印
-			//IgnoreRecordNotFoundError: false,
-			LogLevel: logger.Info, // Log lever
-		},
-	)
-
-	db, err := gorm.Open(mysql.Open(c.Database.Source), &gorm.Config{
-		Logger:                                   newLogger,
-		DisableForeignKeyConstraintWhenMigrating: true,
-		NamingStrategy:                           schema.NamingStrategy{
-			//SingularTable: true, // 表名是否加 s
-		},
-	})
-
-	if err != nil {
-		log.Errorf("failed opening connection to sqlite: %v", err)
-		panic("failed to connect database")
-	}
-
-	err = db.AutoMigrate(&User{})
-	if err != nil {
-		panic(err)
-	}
-
-	return db
-}
 
 func NewRedis(c *conf.Data) *redis.Client {
 	rdb := redis.NewClient(&redis.Options{

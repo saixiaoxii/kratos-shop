@@ -11,7 +11,7 @@ import (
 )
 
 // ProviderSet is server providers.
-var ProviderSet = wire.NewSet(NewGRPCServer, NewHTTPServer,NewRegistrar)
+var ProviderSet = wire.NewSet(NewGRPCServer, NewHTTPServer, NewRegistrar)
 
 // NewRegistrar 引入 consul
 func NewRegistrar(conf *conf.Registry) registry.Registrar {
@@ -26,4 +26,3 @@ func NewRegistrar(conf *conf.Registry) registry.Registrar {
 	r := consul.New(cli, consul.WithHealthCheck(false))
 	return r
 }
-
