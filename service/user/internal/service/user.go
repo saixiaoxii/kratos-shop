@@ -22,28 +22,57 @@ func NewUserService(uc *biz.UserUsecase, logger log.Logger) *UserService {
 
 // CreateUser create a user
 func (u *UserService) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*v1.CreateUserReply, error) {
-    // 记录请求信息，注意避免记录敏感信息如密码
-    u.log.Info(" Creating user ", " mobile:", req.Mobile, " nickname:", req.NickName)
+	// 记录请求信息，注意避免记录敏感信息如密码
+	u.log.Info(" Creating user ", " mobile:", req.Mobile, " nickname:", req.NickName)
 
-    user, err := u.uc.Create(ctx, &biz.User{
-        Mobile:   req.Mobile,
-        Password: req.Password,
-        NickName: req.NickName,
-    })
-    if err != nil {
-        u.log.Error("Failed to create user", "error", err)
-        return nil, err
-    }
+	user, err := u.uc.Create(ctx, &biz.User{
+		Mobile:   req.Mobile,
+		Password: req.Password,
+		NickName: req.NickName,
+		Role:     int(req.Role),
+	})
+	if err != nil {
+		u.log.Error("Failed to create user", "error", err)
+		return nil, err
+	}
 
-    userInfoRsp := v1.CreateUserReply{
-        Id:       user.ID,
-        Mobile:   user.Mobile,
-        Password: user.Password,
-        NickName: user.NickName,
-        Gender:   user.Gender,
-        Role:     int32(user.Role),
-        Birthday: user.Birthday,
-    }
+	userInfoRsp := v1.CreateUserReply{
+		Id:       user.ID,
+		Mobile:   user.Mobile,
+		Password: user.Password,
+		NickName: user.NickName,
+		Gender:   user.Gender,
+		Role:     int32(user.Role),
+		Birthday: user.Birthday,
+	}
 
-    return &userInfoRsp, nil
+	return &userInfoRsp, nil
+}
+
+func (u *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.UpdateUserReply, error) {
+	u.log.Info(" Updating user ", " mobile:", req.Mobile, " nickname:", req.NickName, "Gender:", req.Gender)
+
+	user, err := u.uc.Update(ctx, &biz.User{
+		Mobile:   req.Mobile,
+		Password: req.Password,
+		NickName: req.NickName,
+		Gender:   req.Gender,
+		Role:     int(req.Role),
+	})
+	if err != nil {
+		u.log.Error("Failed to update user", "error", err)
+		return nil, err
+	}
+
+	userInfoRsp := v1.UpdateUserReply{
+		Id:       user.ID,
+		Mobile:   user.Mobile,
+		Password: user.Password,
+		NickName: user.NickName,
+		Gender:   user.Gender,
+		Role:     int32(user.Role),
+		Birthday: user.Birthday,
+	}
+
+	return &userInfoRsp, nil
 }

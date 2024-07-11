@@ -19,6 +19,7 @@ type User struct {
 
 type UserRepo interface {
 	CreateUser(context.Context, *User) (*User, error)
+	UpdateUser(context.Context, *User) (*User, error)
 }
 
 type UserUsecase struct {
@@ -32,4 +33,8 @@ func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
 
 func (uc *UserUsecase) Create(ctx context.Context, u *User) (*User, error) {
 	return uc.repo.CreateUser(ctx, u)
+}
+
+func (uc *UserUsecase) Update(ctx context.Context, u *User) (*User, error) {
+	return uc.repo.UpdateUser(ctx, u)
 }
