@@ -141,6 +141,9 @@ components:
                     type: string
                 mobile:
                     type: string
+                role:
+                    type: integer
+                    format: int32
         api.user.v1.DeleteUserReply:
             type: object
             properties: {}
@@ -152,7 +155,22 @@ components:
             properties: {}
         api.user.v1.UpdateUserReply:
             type: object
-            properties: {}
+            properties:
+                id:
+                    type: string
+                password:
+                    type: string
+                mobile:
+                    type: string
+                nickName:
+                    type: string
+                birthday:
+                    type: string
+                gender:
+                    type: string
+                role:
+                    type: integer
+                    format: int32
         api.user.v1.UpdateUserRequest:
             type: object
             properties:
