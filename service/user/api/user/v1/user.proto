@@ -40,6 +40,7 @@ message CreateUserRequest {
 	string nickName = 1;
 	string password = 2;
 	string mobile = 3;
+  int32 role= 4;
 }
 message CreateUserReply {
 	int64 id = 1;
@@ -60,7 +61,15 @@ message UpdateUserRequest {
 	string gender = 6;
 	int32 role = 7;
 }
-message UpdateUserReply {}
+message UpdateUserReply {
+    int64 id = 1;
+	string password = 2;
+	string mobile = 3;
+	string nickName = 4;
+	int64 birthday = 5;
+	string gender = 6;
+	int32 role = 7;
+}
 
 message DeleteUserRequest {
 	int64 id = 1;
