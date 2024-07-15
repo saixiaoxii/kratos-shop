@@ -1,4 +1,4 @@
-# Go-kratos 框架商城微服务实战之用户服务
+# Go-kratos 框架商城微服务实战一
 
 ## 准备工作，初始化项目目录
 
@@ -20,7 +20,7 @@ go generate ./...
 
 ## 接口定义，在 `user.proto` 定义
 
-```protobuf
+```proto
 syntax = "proto3";
 
 package api.user.v1;

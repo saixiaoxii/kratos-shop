@@ -1,3 +1,16 @@
+# Go-kratos 框架商城微服务实战五
+
+## 新增一个checkpassword的方法
+这里就不提供修改部分，可以直接去[github]()仓库看源码
+- 修改接口
+- biz层新增方法
+- data层新增方法
+- service层新增方法
+
+## 单元测试
+这里对`data`层进行单元测试
+- 新建一个/data/user_test.go
+```go
 package data
 
 import (
@@ -170,3 +183,8 @@ func TestCheckPassword(t *testing.T) {
 	assert.NoError(t, err)
 	assert.False(t, invalid)
 }
+
+```
+可以对data层进行测试
+
+后续补全biz层和service层
