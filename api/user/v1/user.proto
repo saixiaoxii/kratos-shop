@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package api.user.v1;
+
+option go_package = "user/api/user/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.user.v1";
+import "google/api/annotations.proto";
+service User {
+	rpc CreateUser (CreateUserRequest) returns (CreateUserReply) {
+        option (google.api.http) = {
+            post: "/v1/users"
+            body: "*"
+        };
+    }
+    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserReply) {
+        option (google.api.http) = {
+            put: "/v1/users/{id}"
+            body: "*"
+        };
+    }
+    rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply) {
+        option (google.api.http) = {
+            delete: "/v1/users/{id}"
+        };
+    }
+    rpc GetUser (GetUserRequest) returns (GetUserReply) {
+        option (google.api.http) = {
+            get: "/v1/users/{id}"
+        };
+    }
+    rpc ListUser (ListUserRequest) returns (ListUserReply) {
+        option (google.api.http) = {
+            get: "/v1/users"
+        };
+    }
+}
+
+message CreateUserRequest {
+	string nickName = 1;
+	string password = 2;
+	string mobile = 3;
+    int32 role= 4;
+}
+message CreateUserReply {
+	int64 id = 1;
+	string password = 2;
+	string mobile = 3;
+	string nickName = 4;
+	int64 birthday = 5;
+	string gender = 6;
+	int32 role = 7;
+}
+
+message UpdateUserRequest {
+	int64 id = 1;
+	string password = 2;
+	string mobile = 3;
+	string nickName = 4;
+	int64 birthday = 5;
+	string gender = 6;
+	int32 role = 7;
+}
+message UpdateUserReply {
+    int64 id = 1;
+	string password = 2;
+	string mobile = 3;
+	string nickName = 4;
+	int64 birthday = 5;
+	string gender = 6;
+	int32 role = 7;
+}
+
+message DeleteUserRequest {
+	int64 id = 1;
+}
+message DeleteUserReply {}
+
+message GetUserRequest {
+	int64 id = 1;
+}
+message GetUserReply {
+    int64 id = 1;
+    string nickName = 2;
+    string password = 3;
+    string mobile = 4;
+    int64 birthday = 5;
+    string gender = 6;
+    int32 role = 7;
+}
+
+message ListUserRequest {}
+message ListUserReply {
+    repeated UserDetail users = 1;
+}
+
+message UserDetail {
+    int64 id = 1;
+    string nickName = 2;
+    string password = 3;
+    string mobile = 4;
+    int64 birthday = 5;
+    string gender = 6;
+    int32 role = 7;
+}
