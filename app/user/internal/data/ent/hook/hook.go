@@ -5,32 +5,8 @@ package hook
 import (
 	"context"
 	"fmt"
-	"user/app/user/internal/data/ent"
+	"kratos-shop/app/user/internal/data/ent"
 )
-
-// The ClassFunc type is an adapter to allow the use of ordinary
-// function as Class mutator.
-type ClassFunc func(context.Context, *ent.ClassMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f ClassFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ClassMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ClassMutation", m)
-}
-
-// The StudentFunc type is an adapter to allow the use of ordinary
-// function as Student mutator.
-type StudentFunc func(context.Context, *ent.StudentMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f StudentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.StudentMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StudentMutation", m)
-}
 
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.

@@ -9,16 +9,13 @@ import (
 	"log"
 	"reflect"
 
-	"user/app/user/internal/data/ent/migrate"
+	"kratos-shop/app/user/internal/data/ent/migrate"
 
-	"user/app/user/internal/data/ent/class"
-	"user/app/user/internal/data/ent/student"
-	"user/app/user/internal/data/ent/user"
+	"kratos-shop/app/user/internal/data/ent/user"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // Client is the client that holds all ent builders.
@@ -26,10 +23,6 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Class is the client for interacting with the Class builders.
-	Class *ClassClient
-	// Student is the client for interacting with the Student builders.
-	Student *StudentClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -43,8 +36,6 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Class = NewClassClient(c.config)
-	c.Student = NewStudentClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -136,11 +127,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Class:   NewClassClient(cfg),
-		Student: NewStudentClient(cfg),
-		User:    NewUserClient(cfg),
+		ctx:    ctx,
+		config: cfg,
+		User:   NewUserClient(cfg),
 	}, nil
 }
 
@@ -158,18 +147,16 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Class:   NewClassClient(cfg),
-		Student: NewStudentClient(cfg),
-		User:    NewUserClient(cfg),
+		ctx:    ctx,
+		config: cfg,
+		User:   NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Class.
+//		User.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -191,328 +178,22 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Class.Use(hooks...)
-	c.Student.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Class.Intercept(interceptors...)
-	c.Student.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
-	case *ClassMutation:
-		return c.Class.mutate(ctx, m)
-	case *StudentMutation:
-		return c.Student.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
-	}
-}
-
-// ClassClient is a client for the Class schema.
-type ClassClient struct {
-	config
-}
-
-// NewClassClient returns a client for the Class from the given config.
-func NewClassClient(c config) *ClassClient {
-	return &ClassClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `class.Hooks(f(g(h())))`.
-func (c *ClassClient) Use(hooks ...Hook) {
-	c.hooks.Class = append(c.hooks.Class, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `class.Intercept(f(g(h())))`.
-func (c *ClassClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Class = append(c.inters.Class, interceptors...)
-}
-
-// Create returns a builder for creating a Class entity.
-func (c *ClassClient) Create() *ClassCreate {
-	mutation := newClassMutation(c.config, OpCreate)
-	return &ClassCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Class entities.
-func (c *ClassClient) CreateBulk(builders ...*ClassCreate) *ClassCreateBulk {
-	return &ClassCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *ClassClient) MapCreateBulk(slice any, setFunc func(*ClassCreate, int)) *ClassCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &ClassCreateBulk{err: fmt.Errorf("calling to ClassClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*ClassCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &ClassCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Class.
-func (c *ClassClient) Update() *ClassUpdate {
-	mutation := newClassMutation(c.config, OpUpdate)
-	return &ClassUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *ClassClient) UpdateOne(cl *Class) *ClassUpdateOne {
-	mutation := newClassMutation(c.config, OpUpdateOne, withClass(cl))
-	return &ClassUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *ClassClient) UpdateOneID(id int) *ClassUpdateOne {
-	mutation := newClassMutation(c.config, OpUpdateOne, withClassID(id))
-	return &ClassUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Class.
-func (c *ClassClient) Delete() *ClassDelete {
-	mutation := newClassMutation(c.config, OpDelete)
-	return &ClassDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *ClassClient) DeleteOne(cl *Class) *ClassDeleteOne {
-	return c.DeleteOneID(cl.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ClassClient) DeleteOneID(id int) *ClassDeleteOne {
-	builder := c.Delete().Where(class.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &ClassDeleteOne{builder}
-}
-
-// Query returns a query builder for Class.
-func (c *ClassClient) Query() *ClassQuery {
-	return &ClassQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeClass},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Class entity by its id.
-func (c *ClassClient) Get(ctx context.Context, id int) (*Class, error) {
-	return c.Query().Where(class.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *ClassClient) GetX(ctx context.Context, id int) *Class {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryStudent queries the student edge of a Class.
-func (c *ClassClient) QueryStudent(cl *Class) *StudentQuery {
-	query := (&StudentClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := cl.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(class.Table, class.FieldID, id),
-			sqlgraph.To(student.Table, student.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, class.StudentTable, class.StudentColumn),
-		)
-		fromV = sqlgraph.Neighbors(cl.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *ClassClient) Hooks() []Hook {
-	return c.hooks.Class
-}
-
-// Interceptors returns the client interceptors.
-func (c *ClassClient) Interceptors() []Interceptor {
-	return c.inters.Class
-}
-
-func (c *ClassClient) mutate(ctx context.Context, m *ClassMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&ClassCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&ClassUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&ClassUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&ClassDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Class mutation op: %q", m.Op())
-	}
-}
-
-// StudentClient is a client for the Student schema.
-type StudentClient struct {
-	config
-}
-
-// NewStudentClient returns a client for the Student from the given config.
-func NewStudentClient(c config) *StudentClient {
-	return &StudentClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `student.Hooks(f(g(h())))`.
-func (c *StudentClient) Use(hooks ...Hook) {
-	c.hooks.Student = append(c.hooks.Student, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `student.Intercept(f(g(h())))`.
-func (c *StudentClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Student = append(c.inters.Student, interceptors...)
-}
-
-// Create returns a builder for creating a Student entity.
-func (c *StudentClient) Create() *StudentCreate {
-	mutation := newStudentMutation(c.config, OpCreate)
-	return &StudentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Student entities.
-func (c *StudentClient) CreateBulk(builders ...*StudentCreate) *StudentCreateBulk {
-	return &StudentCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *StudentClient) MapCreateBulk(slice any, setFunc func(*StudentCreate, int)) *StudentCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &StudentCreateBulk{err: fmt.Errorf("calling to StudentClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*StudentCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &StudentCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Student.
-func (c *StudentClient) Update() *StudentUpdate {
-	mutation := newStudentMutation(c.config, OpUpdate)
-	return &StudentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *StudentClient) UpdateOne(s *Student) *StudentUpdateOne {
-	mutation := newStudentMutation(c.config, OpUpdateOne, withStudent(s))
-	return &StudentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *StudentClient) UpdateOneID(id int) *StudentUpdateOne {
-	mutation := newStudentMutation(c.config, OpUpdateOne, withStudentID(id))
-	return &StudentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Student.
-func (c *StudentClient) Delete() *StudentDelete {
-	mutation := newStudentMutation(c.config, OpDelete)
-	return &StudentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *StudentClient) DeleteOne(s *Student) *StudentDeleteOne {
-	return c.DeleteOneID(s.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *StudentClient) DeleteOneID(id int) *StudentDeleteOne {
-	builder := c.Delete().Where(student.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &StudentDeleteOne{builder}
-}
-
-// Query returns a query builder for Student.
-func (c *StudentClient) Query() *StudentQuery {
-	return &StudentQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeStudent},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Student entity by its id.
-func (c *StudentClient) Get(ctx context.Context, id int) (*Student, error) {
-	return c.Query().Where(student.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *StudentClient) GetX(ctx context.Context, id int) *Student {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryClass queries the class edge of a Student.
-func (c *StudentClient) QueryClass(s *Student) *ClassQuery {
-	query := (&ClassClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(student.Table, student.FieldID, id),
-			sqlgraph.To(class.Table, class.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, student.ClassTable, student.ClassColumn),
-		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *StudentClient) Hooks() []Hook {
-	return c.hooks.Student
-}
-
-// Interceptors returns the client interceptors.
-func (c *StudentClient) Interceptors() []Interceptor {
-	return c.inters.Student
-}
-
-func (c *StudentClient) mutate(ctx context.Context, m *StudentMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&StudentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&StudentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&StudentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&StudentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Student mutation op: %q", m.Op())
 	}
 }
 
@@ -652,9 +333,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Class, Student, User []ent.Hook
+		User []ent.Hook
 	}
 	inters struct {
-		Class, Student, User []ent.Interceptor
+		User []ent.Interceptor
 	}
 )

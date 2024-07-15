@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
+	"kratos-shop/app/user/internal/conf"
 	"os"
-	"user/app/user/internal/conf"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"

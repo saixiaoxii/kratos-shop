@@ -2,8 +2,8 @@ package data
 
 import (
 	"context"
-	"user/app/user/internal/conf"
-	"user/app/user/internal/data/ent"
+	"kratos-shop/app/user/internal/conf"
+	"kratos-shop/app/user/internal/data/ent"
 
 	"github.com/go-redis/redis/extra/redisotel"
 	"github.com/go-redis/redis/v8"

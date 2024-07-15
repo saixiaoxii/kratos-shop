@@ -5,9 +5,9 @@ package ent
 import (
 	"context"
 	"fmt"
+	"kratos-shop/app/user/internal/data/ent/predicate"
+	"kratos-shop/app/user/internal/data/ent/user"
 	"math"
-	"user/app/user/internal/data/ent/predicate"
-	"user/app/user/internal/data/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

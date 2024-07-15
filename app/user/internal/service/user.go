@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	v1 "user/api/user/v1"
-	"user/app/user/internal/biz"
+	v1 "kratos-shop/api/user/v1"
+	"kratos-shop/app/user/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -119,4 +119,16 @@ func (u *UserService) ListUser(ctx context.Context, req *v1.ListUserRequest) (*v
 	}
 
 	return userInfoRsp, nil
+}
+
+func (u *UserService) CheckPassword(ctx context.Context, req *v1.PasswordCheckInfo) (*v1.CheckReply, error) {
+	u.log.Info("Checking password", "password", req.Password, "encryptd password:", req.EncryptedPassword)
+
+	ok, err := u.uc.CheckPassword(ctx, req.Password, req.EncryptedPassword)
+	if err != nil {
+		u.log.Error("Failed to check password", "error", err)
+		return nil, err
+	}
+
+	return &v1.CheckReply{Success: ok}, nil
 }

@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"kratos-shop/app/user/internal/data/ent/predicate"
+	"kratos-shop/app/user/internal/data/ent/user"
 	"time"
-	"user/app/user/internal/data/ent/predicate"
-	"user/app/user/internal/data/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

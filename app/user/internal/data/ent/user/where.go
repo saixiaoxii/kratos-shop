@@ -3,8 +3,8 @@
 package user
 
 import (
+	"kratos-shop/app/user/internal/data/ent/predicate"
 	"time"
-	"user/app/user/internal/data/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 )

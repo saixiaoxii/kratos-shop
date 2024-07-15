@@ -1,7 +1,7 @@
 package server
 
 import (
-	"user/app/user/internal/conf"
+	"kratos-shop/app/user/internal/conf"
 
 	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
 

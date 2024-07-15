@@ -5,9 +5,10 @@ import (
 	"crypto/sha512"
 	"errors"
 	"fmt"
+	"kratos-shop/app/user/internal/biz"
+	"kratos-shop/app/user/internal/data/ent/user"
+	"strings"
 	"time"
-	"user/app/user/internal/biz"
-	"user/app/user/internal/data/ent/user"
 
 	"github.com/anaskhan96/go-password-encoder"
 	"github.com/go-kratos/kratos/v2/log"
@@ -189,4 +190,12 @@ func encrypt(psd string) string {
 	options := &password.Options{SaltLen: 16, Iterations: 10000, KeyLen: 32, HashFunction: sha512.New}
 	salt, encodedPwd := password.Encode(psd, options)
 	return fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd)
+}
+
+// CheckPassword .
+func (r *userRepo) CheckPassword(ctx context.Context, psd, encryptedPassword string) (bool, error) {
+	options := &password.Options{SaltLen: 16, Iterations: 10000, KeyLen: 32, HashFunction: sha512.New}
+	passwordInfo := strings.Split(encryptedPassword, "$")
+	check := password.Verify(psd, passwordInfo[2], passwordInfo[3], options)
+	return check, nil
 }

@@ -34,6 +34,7 @@ service User {
             get: "/v1/users"
         };
     }
+    rpc CheckPassword(PasswordCheckInfo) returns (CheckReply){}; // 检查用户密码
 }
 
 message CreateUserRequest {
@@ -103,3 +104,12 @@ message UserDetail {
     string gender = 6;
     int32 role = 7;
 }
+
+message PasswordCheckInfo{
+    string password = 1;
+    string encryptedPassword = 2;
+}
+
+message CheckReply{
+    bool success = 1;
+  }

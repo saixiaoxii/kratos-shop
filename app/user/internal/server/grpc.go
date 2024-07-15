@@ -1,10 +1,10 @@
 package server
 
 import (
-	v1 "user/api/helloworld/v1"
-	v2 "user/api/user/v1"
-	"user/app/user/internal/conf"
-	"user/app/user/internal/service"
+	v1 "kratos-shop/api/helloworld/v1"
+	v2 "kratos-shop/api/user/v1"
+	"kratos-shop/app/user/internal/conf"
+	"kratos-shop/app/user/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"

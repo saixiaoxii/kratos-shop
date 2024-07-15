@@ -4,9 +4,9 @@ package ent
 
 import (
 	"fmt"
+	"kratos-shop/app/user/internal/data/ent/user"
 	"strings"
 	"time"
-	"user/app/user/internal/data/ent/user"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"

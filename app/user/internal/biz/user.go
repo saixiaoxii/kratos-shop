@@ -22,6 +22,7 @@ type UserRepo interface {
 	UpdateUser(context.Context, *User) (*User, error)
 	GetUser(context.Context, int64) (*User, error)
 	ListUser(context.Context) ([]*User, error)
+	CheckPassword(ctx context.Context, password, encryptedPassword string) (bool, error)
 }
 
 type UserUsecase struct {
@@ -47,4 +48,8 @@ func (uc *UserUsecase) Get(ctx context.Context, id int64) (*User, error) {
 
 func (uc *UserUsecase) List(ctx context.Context) ([]*User, error) {
 	return uc.repo.ListUser(ctx)
+}
+
+func (uc *UserUsecase) CheckPassword(ctx context.Context, password, encryptedPassword string) (bool, error) {
+	return uc.repo.CheckPassword(ctx, password, encryptedPassword)
 }

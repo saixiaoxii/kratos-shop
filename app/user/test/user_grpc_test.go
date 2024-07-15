@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
-	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
-	"github.com/go-kratos/kratos/v2/middleware/metadata"
-	"gopkg.in/yaml.v3"
+	v1 "kratos-shop/api/user/v1"
 	"log"
 	"os"
 	"testing"
 	"time"
 
-	v1 "user/api/user/v1" // 导入 user client
+	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
+	"github.com/go-kratos/kratos/v2/middleware/metadata"
+	"gopkg.in/yaml.v3"
 
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/hashicorp/consul/api"

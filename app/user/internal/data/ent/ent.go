@@ -6,11 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"kratos-shop/app/user/internal/data/ent/user"
 	"reflect"
 	"sync"
-	"user/app/user/internal/data/ent/class"
-	"user/app/user/internal/data/ent/student"
-	"user/app/user/internal/data/ent/user"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -75,9 +73,7 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			class.Table:   class.ValidColumn,
-			student.Table: student.ValidColumn,
-			user.Table:    user.ValidColumn,
+			user.Table: user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)
