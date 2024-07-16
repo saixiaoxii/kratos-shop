@@ -26,7 +26,7 @@ func main() {
 	// new grpc client
 	conn, err := grpc.DialInsecure(
 		context.Background(),
-		grpc.WithEndpoint("discovery:///user"),
+		grpc.WithEndpoint("discovery:///shop.service.user"),
 		grpc.WithDiscovery(r),
 	)
 	if err != nil {

@@ -47,7 +47,7 @@ func setupGRPCClient(t *testing.T) v1.UserClient {
 	// new grpc client
 	conn, err := grpc.DialInsecure(
 		context.Background(),
-		grpc.WithEndpoint("discovery:///user"),
+		grpc.WithEndpoint("discovery:///shop.service.user"),
 		grpc.WithDiscovery(r),
 		grpc.WithMiddleware(
 			metadata.Client(),
