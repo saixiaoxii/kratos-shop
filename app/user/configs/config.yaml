@@ -8,7 +8,7 @@ server:
 data:
   database:
     driver: mysql
-    source: root:dachuang2574598.@tcp(117.72.65.213:13306)/shop_user?charset=utf8mb4&parseTime=True&loc=Local
+    source: root:root@tcp(127.0.0.1:3306)/test?parseTime=True&loc=Local
   redis:
     addr: 192.168.29.130:6379
     dial_timeout: 1s
