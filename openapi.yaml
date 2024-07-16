@@ -6,6 +6,153 @@ info:
     title: ""
     version: 0.0.1
 paths:
+    /api/address/create:
+        post:
+            tags:
+                - Shop
+            operationId: Shop_CreateAddress
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/shop.shop.v1.CreateAddressReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/shop.shop.v1.AddressInfo'
+    /api/address/default:
+        put:
+            tags:
+                - Shop
+            operationId: Shop_DefaultAddress
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/shop.shop.v1.AddressReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/shop.shop.v1.CheckResponse'
+    /api/address/delete:
+        delete:
+            tags:
+                - Shop
+            operationId: Shop_DeleteAddress
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: string
+                - name: uid
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/shop.shop.v1.CheckResponse'
+    /api/address/list/uid:
+        get:
+            tags:
+                - Shop
+            operationId: Shop_AddressListByUid
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/shop.shop.v1.ListAddressReply'
+    /api/address/update:
+        put:
+            tags:
+                - Shop
+            operationId: Shop_UpdateAddress
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/shop.shop.v1.UpdateAddressReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/shop.shop.v1.CheckResponse'
+    /api/users/captcha:
+        get:
+            tags:
+                - Shop
+            operationId: Shop_Captcha
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/shop.shop.v1.CaptchaReply'
+    /api/users/detail:
+        get:
+            tags:
+                - Shop
+            operationId: Shop_Detail
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/shop.shop.v1.UserDetailResponse'
+    /api/users/login:
+        post:
+            tags:
+                - Shop
+            operationId: Shop_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/shop.shop.v1.LoginReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/shop.shop.v1.RegisterReply'
+    /api/users/register:
+        post:
+            tags:
+                - Shop
+            operationId: Shop_Register
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/shop.shop.v1.RegisterReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/shop.shop.v1.RegisterReply'
     /helloworld/{name}:
         get:
             tags:
@@ -232,7 +379,154 @@ components:
                 message:
                     type: string
             description: The response message containing the greetings
+        shop.shop.v1.AddressInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                mobile:
+                    type: string
+                Province:
+                    type: string
+                City:
+                    type: string
+                Districts:
+                    type: string
+                address:
+                    type: string
+                postCode:
+                    type: string
+                isDefault:
+                    type: integer
+                    format: int32
+        shop.shop.v1.AddressReq:
+            type: object
+            properties:
+                id:
+                    type: string
+                uid:
+                    type: string
+        shop.shop.v1.CaptchaReply:
+            type: object
+            properties:
+                captchaId:
+                    type: string
+                picPath:
+                    type: string
+        shop.shop.v1.CheckResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+        shop.shop.v1.CreateAddressReq:
+            type: object
+            properties:
+                uid:
+                    type: string
+                name:
+                    type: string
+                mobile:
+                    type: string
+                Province:
+                    type: string
+                City:
+                    type: string
+                Districts:
+                    type: string
+                address:
+                    type: string
+                postCode:
+                    type: string
+                isDefault:
+                    type: integer
+                    format: int32
+        shop.shop.v1.ListAddressReply:
+            type: object
+            properties:
+                results:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/shop.shop.v1.AddressInfo'
+        shop.shop.v1.LoginReq:
+            type: object
+            properties:
+                mobile:
+                    type: string
+                password:
+                    type: string
+                captcha:
+                    type: string
+                captchaId:
+                    type: string
+        shop.shop.v1.RegisterReply:
+            type: object
+            properties:
+                id:
+                    type: string
+                mobile:
+                    type: string
+                username:
+                    type: string
+                token:
+                    type: string
+                expiredAt:
+                    type: string
+            description: Data returned by registration and login
+        shop.shop.v1.RegisterReq:
+            type: object
+            properties:
+                mobile:
+                    type: string
+                username:
+                    type: string
+                password:
+                    type: string
+        shop.shop.v1.UpdateAddressReq:
+            type: object
+            properties:
+                uid:
+                    type: string
+                name:
+                    type: string
+                mobile:
+                    type: string
+                Province:
+                    type: string
+                City:
+                    type: string
+                Districts:
+                    type: string
+                address:
+                    type: string
+                postCode:
+                    type: string
+                isDefault:
+                    type: integer
+                    format: int32
+                id:
+                    type: string
+        shop.shop.v1.UserDetailResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                mobile:
+                    type: string
+                nickName:
+                    type: string
+                birthday:
+                    type: string
+                gender:
+                    type: string
+                role:
+                    type: integer
+                    format: int32
+            description: user Detail returned
 tags:
     - name: Greeter
       description: The greeting service definition.
+    - name: Shop
+      description: The Shop service definition.
     - name: User
