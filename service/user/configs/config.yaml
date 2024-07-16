@@ -1,14 +1,14 @@
 server:
   http:
-    addr: 0.0.0.0:8002
+    addr: 0.0.0.0:8000
     timeout: 1s
   grpc:
-    addr: 0.0.0.0:50053
+    addr: 0.0.0.0:50051
     timeout: 1s
 data:
   database:
     driver: mysql
-    source: root:root@tcp(127.0.0.1:3306)/test?parseTime=True&loc=Local
+    source: root:123456@tcp(192.168.29.130:3306)/shop_user?charset=utf8mb4&parseTime=True&loc=Local
   redis:
     addr: 192.168.29.130:6379
     dial_timeout: 1s
